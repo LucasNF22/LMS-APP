@@ -31,9 +31,9 @@ app.get("/test", (req: Request, res: Response, next: NextFunction) => {
 
 // Ruta desconocida
 app.get("/*", (req: Request, res: Response, next: NextFunction) => {
-   const err = new Error(`Route ${req.originalUrl} not Found`) as any;
-   err.statusCode = 400;
-next(err);
+    const err = new Error(`Route ${req.originalUrl} not Found`) as any;
+    err.statusCode = 404;
+    next(err);
 });
 
 
