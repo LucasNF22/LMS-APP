@@ -4,6 +4,8 @@ import express from 'express';
 export const app = express();
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { ErrorMiddleware } from './middlewares/error';
+
 
 
 // Body parser
@@ -37,3 +39,4 @@ app.get("/*", (req: Request, res: Response, next: NextFunction) => {
 });
 
 
+app.use(ErrorMiddleware);
