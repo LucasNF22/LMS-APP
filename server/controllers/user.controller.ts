@@ -6,6 +6,7 @@ import { CatchAsyncError } from '../middlewares/catchAsyncErrors';
 import Jwt, { Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import path from 'path';
+import sendMail from '../utils/sendMail';
 
 
 // Registro de usuario
@@ -36,14 +37,25 @@ export const registrationUser = CatchAsyncError( async( req:Request, res:Respons
         const activationCode = activationToken.activationCode;
 
         const data = {user: {name:user.name}, activationCode}
-        const html = await ejs.renderFile(path.join(__dirname, "../mail/activation-email.ejs"), data)
+        const html = await ejs.renderFile(path.join(__dirname, "../mails/activation-mail.ejs"), data)
 
         try {
-            
-        } catch (error) {
-            console.log(error);
-            
-        }
+           await sendMail({
+            email: user.email,
+            subject: "Activacion de cuenta",
+            template: "activation-mail.ejs",
+            data,
+           });
+
+           res.status(201).json({
+            succes: true,
+            message: `Por favor revise su correo: ${user.email} para avtivar su cuenta.`,
+            activationToken: activationToken.token,
+           })
+
+        } catch (error:any) {
+            return next(new ErrorHandler(error.message, 400))
+        };
 
 
     } catch (error:any) {
