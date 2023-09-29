@@ -1,6 +1,5 @@
 require('dotenv').config();
-import { NextFunction, Request, Response } from 'express';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 export const app = express();
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -22,7 +21,7 @@ app.use(cors({
 }));
 
 // rutas
-app.use('/api/v1', userRouter)
+app.use("/api/v1", userRouter)
 
 
 // Testing API

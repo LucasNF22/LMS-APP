@@ -1,6 +1,6 @@
 require ('dotenv').config();
 import { Request, Response, NextFunction } from 'express';
-import userModel, { IUser } from '../models/user.model';
+import userModel from '../models/user.model';
 import ErrorHandler from '../utils/ErrorHandler';
 import { CatchAsyncError } from '../middlewares/catchAsyncErrors';
 import Jwt, { Secret } from 'jsonwebtoken';
@@ -48,8 +48,8 @@ export const registrationUser = CatchAsyncError( async( req:Request, res:Respons
            });
 
            res.status(201).json({
-            succes: true,
-            message: `Por favor revise su correo: ${user.email} para avtivar su cuenta.`,
+            success: true,
+            message: `Por favor revise su correo: ${user.email} para activar su cuenta.`,
             activationToken: activationToken.token,
            })
 
@@ -73,7 +73,9 @@ export const createActivationToken = (user: any): IActivationToken => {
 
     const token = Jwt.sign({
         user, activationCode
-    }, process.env.ACTIVATION_SECRET as Secret,{
+    }, 
+        process.env.ACTIVATION_SECRET as Secret,
+    {
         expiresIn: "5m",
     });
 
