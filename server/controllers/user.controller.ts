@@ -93,10 +93,34 @@ export const activateUser = CatchAsyncError(async( req:Request, res:Response, ne
     try {
         const { activation_token, activation_code } = req.body as IActivationRequest;
 
-        const newUser : { user:IUser; activationCode: string } = jwt.verify(
+        const newUser : { user:IUser; activationCode: string } = Jwt.verify(
             activation_token,
             process.env.ACTIVATION_SECRET as string,
-        ) as 
+        ) as  {user: IUser; activationCode: string };
+
+        if( newUser.activationCode !== activation_code ){
+            return( new ErrorHandler("Código de activación inválido", 400) )
+        };
+
+        const {  name, email, password } = newUser.user;
+
+        const existUser = await userModel.findOne({email});
+
+        if(existUser){
+            return next( new ErrorHandler("El email ya esta en uso.", 400));
+        };
+
+        const user = await userModel.create({
+            name, 
+            email, 
+            password,
+        });
+
+        res.status(201).json({
+            success: true,
+        });
+
+
 
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 400))
