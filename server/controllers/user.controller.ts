@@ -1,12 +1,13 @@
 require ('dotenv').config();
 import { Request, Response, NextFunction } from 'express';
-import userModel from '../models/user.model';
+import userModel, { IUser } from '../models/user.model';
 import ErrorHandler from '../utils/ErrorHandler';
 import { CatchAsyncError } from '../middlewares/catchAsyncErrors';
 import Jwt, { Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import path from 'path';
 import sendMail from '../utils/sendMail';
+import { AnyARecord } from 'dns';
 
 
 // Registro de usuario
@@ -80,5 +81,25 @@ export const createActivationToken = (user: any): IActivationToken => {
     });
 
     return { token, activationCode }
-}
+};
+
+// Activacion de usuario
+interface IActivationRequest{
+    activation_token: string,
+    activation_code: string,
+};
+
+export const activateUser = CatchAsyncError(async( req:Request, res:Response, next:NextFunction ) => {
+    try {
+        const { activation_token, activation_code } = req.body as IActivationRequest;
+
+        const newUser : { user:IUser; activationCode: string } = jwt.verify(
+            activation_token,
+            process.env.ACTIVATION_SECRET as string,
+        ) as 
+
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400))
+    }
+});
 
