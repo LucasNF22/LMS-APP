@@ -7,7 +7,8 @@ import Jwt, { Secret } from 'jsonwebtoken';
 import ejs from 'ejs';
 import path from 'path';
 import sendMail from '../utils/sendMail';
-import { AnyARecord } from 'dns';
+import { nextTick } from 'process';
+
 
 
 // Registro de usuario
@@ -126,4 +127,15 @@ export const activateUser = CatchAsyncError(async( req:Request, res:Response, ne
         return next(new ErrorHandler(error.message, 400))
     }
 });
+
+// Login
+interface ILoginRequest {
+    email: string, 
+    password: string,
+};
+
+export const loginUser = CatchAsyncError( async(( req:Request, res:Response, next: NextFunction ) => {
+    
+}))
+
 
