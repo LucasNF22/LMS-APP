@@ -8,6 +8,7 @@ import ejs from 'ejs';
 import path from 'path';
 import sendMail from '../utils/sendMail';
 import { nextTick } from 'process';
+import { sendToken } from '../utils/jwt';
 
 
 
@@ -142,7 +143,7 @@ export const loginUser = CatchAsyncError( async( req:Request, res:Response, next
             return next( new ErrorHandler( "Por favor ingrese su mail y contraseña", 400 ));
         };
 
-        const user = await userModel.findOne({ email }).select("password");
+        const user = await userModel.findOne({ email }).select("+password");
 
         if( !email ){
             return next( new ErrorHandler("Email o constraseña incorrectos", 400));
@@ -153,6 +154,8 @@ export const loginUser = CatchAsyncError( async( req:Request, res:Response, next
         if( !isPasswordMatch ){
             return next( new ErrorHandler( "Invalid email or password", 400 ));
         };
+
+        sendToken(user, 200, res);
 
         
 

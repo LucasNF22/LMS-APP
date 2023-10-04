@@ -15,6 +15,7 @@ export const sendToken = ( user: IUser, statuscode: number, res: Response ) => {
     const refreshToken = user.SignRefreshToken();
 
     // Subir la session a redis
+    redis.set( user._id, JSON.stringify(user) as any );
 
     // Parsear variables de entorno para integrarlas con los valores de reserva.
     const accessTokenExpire = parseInt(process.env.ACCESS_TOKEN_EXPIRE || '300', 10);
@@ -42,6 +43,11 @@ export const sendToken = ( user: IUser, statuscode: number, res: Response ) => {
     res.cookie( "access_token", accessToken, accessTokenOptions );
     res.cookie( "refresh_token", refreshToken, refreshTokenOptions );
 
+    res.status(statuscode).json({
+        success: true,
+        user, 
+        accessToken
+    })
 
 };
 
