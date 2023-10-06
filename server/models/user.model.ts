@@ -1,7 +1,7 @@
 require('dotenv').config();
 import mongoose, { Document, Model, Schema } from 'mongoose';
 var bcrypt = require('bcryptjs');
-import Jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 
 const emailRegexPattern: RegExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -19,7 +19,7 @@ export interface IUser extends Document{
     courses: Array<{courseId: string}>,
     comparePassword: (password: string) => Promise<boolean>,
     SignAccessToken: () => string,
-    SignRefreshToken: () => string
+    SignRefreshToken: () => string,
 
 };
 
@@ -81,12 +81,12 @@ userSchema.pre<IUser>( 'save', async function(next){
 
 // Sign Access_token
 userSchema.methods.SignAccessToken = function() {
-    return Jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || '' );
+    return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || '' );
 };
 
 // sign refresh_token
 userSchema.methods.SignRefreshToken = function() {
-    return Jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || '' );
+    return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || '' );
 };
 
 

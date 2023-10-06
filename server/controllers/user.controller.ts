@@ -7,7 +7,6 @@ import Jwt, { Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
-import { nextTick } from "process";
 import { sendToken } from "../utils/jwt";
 
 // Registro de usuario
@@ -138,35 +137,30 @@ interface ILoginRequest {
     password: string;
 }
 
-export const loginUser = CatchAsyncError(
-    async (req: Request, res: Response, next: NextFunction) => {
+export const loginUser = CatchAsyncError( async (req: Request, res: Response, next: NextFunction) => {
+        
         try {
             const { email, password } = req.body as ILoginRequest;
 
             if (!email || !password) {
-                return next(
-                    new ErrorHandler(
-                        "Por favor ingrese su mail y contraseña",
-                        400
-                    )
-                );
-            }
+                return next( new ErrorHandler( "Por favor ingrese su mail y contraseña", 400 ));
+            };
 
-            const user = await userModel.findOne({ email }).select("+password");
+            const user = await userModel.findOne({ email }).select("password");
 
-            if (!email) {
-                return next(
-                    new ErrorHandler("Email o constraseña incorrectos", 400)
-                );
+            if (!user) {
+                return next( new ErrorHandler( "Email o constraseña incorrectos", 400 ));
             }
 
             const isPasswordMatch = await user?.comparePassword(password);
 
             if (!isPasswordMatch) {
                 return next(new ErrorHandler("Invalid email or password", 400));
-            }
-
+            };
+            
             sendToken(user, 200, res);
+
+
         } catch (error: any) {
             return next(new ErrorHandler(error.message, 400));
         }
