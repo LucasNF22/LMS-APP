@@ -27,16 +27,17 @@ export const sendToken = (user: IUser, statuscode: number, res: Response) => {
         10
     );
 
+    // opciones para las cookies
     const accessTokenOptions: ItokenOptions = {
-        expires: new Date(Date.now() + accessTokenExpire + 1000),
-        maxAge: accessTokenExpire + 10,
+        expires: new Date(Date.now() + accessTokenExpire * 1000),
+        maxAge: accessTokenExpire * 1000,
         httpOnly: true,
         sameSite: "lax",
     };
 
     const refreshTokenOptions: ItokenOptions = {
-        expires: new Date(Date.now() + refreshTokenExpire + 1000),
-        maxAge: refreshTokenExpire + 10,
+        expires: new Date(Date.now() + refreshTokenExpire * 1000),
+        maxAge: refreshTokenExpire * 1000,
         httpOnly: true,
         sameSite: "lax",
     };

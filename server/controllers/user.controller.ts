@@ -3,11 +3,12 @@ import { Request, Response, NextFunction } from "express";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
-import Jwt, { Secret } from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
 import { sendToken } from "../utils/jwt";
+import { redis } from "../utils/redis";
 
 // Registro de usuario
 interface IRegistrationBody {
@@ -73,7 +74,7 @@ interface IActivationToken {
 export const createActivationToken = (user: any): IActivationToken => {
     const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
-    const token = Jwt.sign(
+    const token = jwt.sign(
         {
             user,
             activationCode,
@@ -99,7 +100,7 @@ export const activateUser = CatchAsyncError(
             const { activation_token, activation_code } =
                 req.body as IActivationRequest;
 
-            const newUser: { user: IUser; activationCode: string } = Jwt.verify(
+            const newUser: { user: IUser; activationCode: string } = jwt.verify(
                 activation_token,
                 process.env.ACTIVATION_SECRET as string
             ) as { user: IUser; activationCode: string };
@@ -146,7 +147,7 @@ export const loginUser = CatchAsyncError( async (req: Request, res: Response, ne
                 return next( new ErrorHandler( "Por favor ingrese su mail y contraseña", 400 ));
             };
 
-            const user = await userModel.findOne({ email }).select("password");
+            const user = await userModel.findOne({ email }).select("+password");
 
             if (!user) {
                 return next( new ErrorHandler( "Email o constraseña incorrectos", 400 ));
@@ -166,3 +167,25 @@ export const loginUser = CatchAsyncError( async (req: Request, res: Response, ne
         }
     }
 );
+
+
+// Logout de usuario                     
+export const logoutUser = CatchAsyncError( async( req: Request, res: Response, next: NextFunction ) => {
+    
+    try {
+        res.cookie("access_token", "", { maxAge: 1 });
+        res.cookie("refresh_token", "", { maxAge: 1 });
+
+        const userId = req.user?._id || "";
+        
+        redis.del(userId);
+
+        res.status(200).json({
+            success: true, 
+            messge: "Su sesión ha sido cerrada corectamente"
+        });
+
+    } catch (error: any) {
+        return next( new ErrorHandler(error.message, 400) );
+    };
+});
