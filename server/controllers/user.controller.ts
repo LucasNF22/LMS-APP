@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import ejs from "ejs";
 import path from "path";
 import sendMail from "../utils/sendMail";
@@ -189,3 +189,32 @@ export const logoutUser = CatchAsyncError( async( req: Request, res: Response, n
         return next( new ErrorHandler(error.message, 400) );
     };
 });
+
+
+// Update del access-token
+export const updateAccessToken = CatchAsyncError( async( req: Request, res: Response, next: NextFunction ) => {
+    try {
+        const refresh_token = req.cookies.refresh_token as string;
+        const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET as string ) as JwtPayload;
+
+        const message = "No se pudo refrescar el token";
+        if( !decoded ){
+            return next( new ErrorHandler( message, 400 ));
+        };
+
+        const session = await redis.get(decoded.id as string);
+        if( !session ){
+            return next( new ErrorHandler( message, 400 ));
+        };
+
+        const user = JSON.parse(session);
+
+        const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN as string, {
+            expiresIn: "5m"
+        });
+
+
+    } catch (error: any) {
+        return next( new ErrorHandler( error.message, 400 ));
+    }
+})
