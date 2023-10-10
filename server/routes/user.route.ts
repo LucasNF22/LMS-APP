@@ -1,7 +1,7 @@
 const express = require('express');
 // import express from "express"
 
-import { activateUser, loginUser, logoutUser, registrationUser, updateAccessToken } from "../controllers/user.controller";
+import { activateUser, getUserInfo, loginUser, logoutUser, registrationUser, socialAuth, updateAccessToken } from "../controllers/user.controller";
 import { authorizedRoles, isAuthenticated } from "../middlewares/auth";
 
 const userRouter = express.Router();
@@ -20,6 +20,12 @@ userRouter.get("/logout", [ isAuthenticated, authorizedRoles('user') ], logoutUs
 
 // Update AccessToken
 userRouter.get("/refresh", updateAccessToken);
+
+// User Info
+userRouter.get("/me", isAuthenticated, getUserInfo);
+
+// Social Auth
+userRouter.post("/social-auth", socialAuth);
 
 
  

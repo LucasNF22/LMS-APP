@@ -43,7 +43,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 
         password: {
             type: String,
-            required: [true, "Por favor ingrese su contraseña"],
+            // required: [true, "Por favor ingrese su contraseña"],
             minlength: [6, "La contraseña debe tener al menos 6 caracteres"],
             selec: false,
         },
