@@ -230,6 +230,8 @@ export const updateAccessToken = CatchAsyncError( async( req: Request, res: Resp
             }
         );
 
+        req.user = user;
+
         res.cookie( "access_token", accessToken, accessTokenOptions );
         res.cookie( "refresh_token", refreshToken, refreshTokenOptions );
 
@@ -280,4 +282,45 @@ export const socialAuth = CatchAsyncError(async( req: Request, res: Response, ne
     } catch (error: any) {
         return next ( new ErrorHandler( error.message, 400 ));
     }
+});
+
+// Update info usuario
+interface IUpdateUserInfo {
+    name?: string,
+    email?: string,
+};
+
+export const updateUserInfo = CatchAsyncError( async( req: Request, res: Response, next:NextFunction ) => {
+    try {
+        const { name, email } = req.body as IUpdateUserInfo;
+        const userId = req.user?._id;
+        const user = await userModel.findById(userId);
+
+        if ( email && user ){
+            const isEmailExist = await userModel.findOne({ email });
+
+            if( isEmailExist ){
+                return next( new ErrorHandler("El email ya existe", 400));
+            };
+            
+            user.email = email;
+
+        };
+
+        if( name && user ){
+            user.name = name;
+        }
+
+        await user?.save();
+
+        await redis.set( userId, JSON.stringify(user));
+
+        res.status(200).json({
+            success: true,
+            user,
+        });
+
+    } catch (error: any) {
+        return next ( new ErrorHandler( error.message, 400 ));
+    };
 });
