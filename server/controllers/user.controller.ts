@@ -1,5 +1,5 @@
 require("dotenv").config();
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, request } from "express";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
@@ -273,7 +273,7 @@ export const socialAuth = CatchAsyncError(async( req: Request, res: Response, ne
 
         if( !user ){
             const newUser = await userModel.create({ email, name, avatar });
-            sendToken( newUser, 200, res );
+            sendToken( newUser, 201, res );
         }else {
             sendToken( user, 200, res );
         };
@@ -315,7 +315,7 @@ export const updateUserInfo = CatchAsyncError( async( req: Request, res: Respons
 
         await redis.set( userId, JSON.stringify(user));
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
             user,
         });
@@ -324,3 +324,46 @@ export const updateUserInfo = CatchAsyncError( async( req: Request, res: Respons
         return next ( new ErrorHandler( error.message, 400 ));
     };
 });
+
+
+// Update password de usario
+interface IUpdatePasword {
+    oldPassword: string,
+    newPassword: string,
+};
+
+export const updateUserPassword = CatchAsyncError( async( req: Request, res: Response, next: NextFunction  ) => {
+    try {
+        const { oldPassword, newPassword } = req.body as IUpdatePasword;
+
+        if( !oldPassword || !newPassword ){
+            return next( new ErrorHandler( "Por favor ingrese sus contraseñas", 400 ));
+        }
+
+        const user = await userModel.findById(req.user?._id).select("+password");;
+
+        if( user?.password === undefined ){
+            return next( new ErrorHandler( "Usuario inválido", 400 ));
+        };
+
+        const isPasswordMatch = await user?.comparePassword(oldPassword);
+
+        if( !isPasswordMatch ){
+            return next( new ErrorHandler( "Password no válido", 400 ));
+        };
+
+        user.password = newPassword;
+
+        await user.save();
+
+        await redis.set(req.user?._id, JSON.stringify(user));
+
+        res.status(201).json({
+            succes: true,
+            user,
+        })
+
+    } catch (error: any) {
+        return next( new ErrorHandler(error.message, 400));
+    };
+}) 
