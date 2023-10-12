@@ -1,7 +1,7 @@
 const express = require('express');
 // import express from "express"
 
-import { activateUser, getUserInfo, loginUser, logoutUser, registrationUser, socialAuth, updateAccessToken, updateUserInfo, updateUserPassword } from "../controllers/user.controller";
+import { activateUser, getUserInfo, loginUser, logoutUser, registrationUser, socialAuth, updateAccessToken, updateProfilePicture, updateUserInfo, updateUserPassword } from "../controllers/user.controller";
 import { authorizedRoles, isAuthenticated } from "../middlewares/auth";
 
 const userRouter = express.Router();
@@ -32,6 +32,9 @@ userRouter.put("/update-user-info", isAuthenticated, updateUserInfo);
 
 // Update password de usuario
 userRouter.put("/update-user-password", isAuthenticated, updateUserPassword);
+
+// Update avatar de usuario
+userRouter.put("/update-user-avatar", isAuthenticated, updateProfilePicture);
 
 
  
