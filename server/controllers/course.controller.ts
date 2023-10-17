@@ -8,6 +8,17 @@ export const uploadCourse = CatchAsyncError( async (req: Request, res: Response,
     try {
         const data = req.body;
         const thumbnail= data.course;
+        if( thumbnail ){
+            const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
+                folder: "courses",
+            });
+
+            data.thumbnail = {
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+            };
+
+        }
     } catch (error: any) {
         return next( new ErrorHandler( error.message, 400 ))
     }
