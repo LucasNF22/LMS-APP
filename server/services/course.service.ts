@@ -1,12 +1,14 @@
-import { Response } from 'express';
-import CourseModel from '../models/course.model';
-import { CatchAsyncError } from '../middlewares/catchAsyncErrors';
+import { Response } from "express";
+import CourseModel from "../models/course.model";
+import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 
 // Crear curso
-export const createCourse = CatchAsyncError( async( data: any, res: Response) => {
+export const createCourse = CatchAsyncError( async(data: any, res: Response) => {
     const course = await CourseModel.create(data);
-    res.status(200).json({
-        success: true, 
+    res.status(201).json({
+        success: true,
         course
-    });
-});
+    })
+    
+}) 
+

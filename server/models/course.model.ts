@@ -42,7 +42,7 @@ interface ICourse extends Document {
     level: string,
     demoUrl: string,
     benefits: { title: string}[],
-    prerequisits: {title: string}[],
+    prerequisites: {title: string}[],
     reviews: IReview[],
     courseData: ICourseData[],
     ratings?: number,
@@ -72,13 +72,12 @@ const commentSchema = new Schema<IComment>({
 
 const courseDataSchema = new Schema<ICourseData>({
     videoUrl: String,
-    videoThumbnail: Object,
     title: String,
     videoSection: String,
     description: String,
     videoLength: Number,
     videoPlayer: String,
-    links: {linkSchema},
+    links: [linkSchema],
     suggestion: String,
     questions: [commentSchema],
 
@@ -99,16 +98,14 @@ const courseSchema = new Schema<ICourse>({
         required: true,
     },
     estimatedPrice: {
-        Number
+        type: Number
     },
     thumbnail: {
         public_id: {
             type: String,
-            required: true,
         },
         url: {
             type: String,
-            required: true,
         }
     },
     tags: {
@@ -124,7 +121,7 @@ const courseSchema = new Schema<ICourse>({
         required: true
     },
     benefits: [{ title: String }],
-    prerequisits: [{ title: String }],
+    prerequisites: [{ title: String }],
     reviews: [reviewSchema],
     courseData: [courseDataSchema],
     ratings: {
@@ -132,7 +129,7 @@ const courseSchema = new Schema<ICourse>({
         default: 0,
     },
     purchased: {
-        typer: Number,
+        type: Number,
         default: 0
     }
     

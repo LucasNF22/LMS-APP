@@ -1,6 +1,6 @@
 require('dotenv').config();
-import express, { NextFunction, Request, Response } from 'express';
-export const app = express();
+import express, { NextFunction, Request, Response, Express } from 'express';
+export const app: Express = express();
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { ErrorMiddleware } from './middlewares/error';
@@ -30,7 +30,7 @@ app.use("/api/v1", courseRouter);
 // Testing API
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json({
-        succes: true,
+        success: true,
         message: "Testing API en funcionamiento."
     })
 });
