@@ -88,29 +88,41 @@ export const getSingleCourse = CatchAsyncError( async(req: Request, res: Respons
             res.status(200).json({
                 success: true, 
                 course
-            })
-        }
-
-        
+            });
+        };
 
     } catch (error: any) {
         return next( new ErrorHandler( error.message, 500 ))
-    } 
+    };
     
 });
 
 // Traer todos los cursos -- no comprados
 export const getAllCourses = CatchAsyncError( async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const courses = await CourseModel.find().select("-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links")
 
-        res.status(200).json({
-            success: true, 
-            courses
-        })
+        const isCacheExist = await redis.get("allCourses");
+        if( isCacheExist ) {
+            const courses = JSON.parse(isCacheExist);
+            // console.log("redis");
+            res.status(200).json({
+                success: true,
+                courses
+            });
+        }else {
+
+            const courses = await CourseModel.find().select("-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links")
+
+            await redis.set( "allCourses", JSON.stringify(courses) );
+            // console.log("mongo");    
+            res.status(200).json({
+                success: true, 
+                courses
+            });
+        };
 
     } catch (error: any) {
         return next( new ErrorHandler( error.message, 500 ))
-    } 
+    };
     
 });
