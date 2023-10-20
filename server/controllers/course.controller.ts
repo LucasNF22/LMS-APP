@@ -66,7 +66,7 @@ export const editCourse = CatchAsyncError( async( req: Request, res: Response, n
     }
 });
 
-// Traer un solo curso -- no comprados
+// Obtener un solo curso -- no comprados
 export const getSingleCourse = CatchAsyncError( async(req: Request, res: Response, next: NextFunction) => {
     try {
 
@@ -97,7 +97,7 @@ export const getSingleCourse = CatchAsyncError( async(req: Request, res: Respons
     
 });
 
-// Traer todos los cursos -- no comprados
+// Obtener todos los cursos -- no comprados
 export const getAllCourses = CatchAsyncError( async(req: Request, res: Response, next: NextFunction) => {
     try {
 
@@ -126,3 +126,28 @@ export const getAllCourses = CatchAsyncError( async(req: Request, res: Response,
     };
     
 });
+
+// Obtener contenido del curso -- solo para usuario valido.
+export const getCourseByUser = CatchAsyncError( async( req: Request, res: Response, next: NextFunction ) => {
+    try {
+        const userCourseList = req.user?.courses;
+        const courseId = req.params.id;
+
+        const courseExist = userCourseList?.find(( course:any) => course._id.toString() === courseId );
+
+        if( !courseExist ){
+            return next( new ErrorHandler( "No tienes acceso al contenido de este curso", 400 ));
+        };
+
+        const course = await CourseModel.findById(courseId);
+        const content = course?.courseData;
+
+        res.status(200).json({
+            success: true,
+            content
+        });
+
+    } catch (error:any) {
+        return next( new ErrorHandler( error.message, 500 ));
+    }
+})

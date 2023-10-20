@@ -1,5 +1,5 @@
 const express = require('express');
-import { editCourse, getAllCourses, getSingleCourse, uploadCourse } from '../controllers/course.controller';
+import { editCourse, getAllCourses, getCourseByUser, getSingleCourse, uploadCourse } from '../controllers/course.controller';
 import { authorizedRoles, isAuthenticated } from '../middlewares/auth';
 const courseRouter = express.Router();
 
@@ -14,5 +14,8 @@ courseRouter.get( "/get-course/:id", getSingleCourse );
 
 // obetener todos los cursos no comprados
 courseRouter.get( "/get-courses", getAllCourses );
+
+// Obtener contenido de curso comprado
+courseRouter.get( "/get-course-content/:id", isAuthenticated, getCourseByUser );
 
 export default courseRouter;
