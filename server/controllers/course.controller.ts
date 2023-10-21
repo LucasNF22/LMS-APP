@@ -150,4 +150,22 @@ export const getCourseByUser = CatchAsyncError( async( req: Request, res: Respon
     } catch (error:any) {
         return next( new ErrorHandler( error.message, 500 ));
     }
+});
+
+// Crear pregunta en curso
+interface IAddQuestionData {
+    question: string;
+    courseId: string;
+    contentId: String;
+};
+
+export const addQuestion = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { question, courseId, contentId } = req.body as IAddQuestionData;
+
+        
+
+    } catch (error:any) {
+        return next( new ErrorHandler(error.message, 500));
+    }
 })
