@@ -5,6 +5,7 @@ import cloudinary from 'cloudinary';
 import { createCourse } from '../services/course.service';
 import CourseModel from '../models/course.model';
 import { redis } from '../utils/redis';
+import mongoose from 'mongoose';
 
 // Subir Curso
 export const uploadCourse = CatchAsyncError( async (req: Request, res: Response, next: NextFunction) => {
@@ -162,7 +163,11 @@ interface IAddQuestionData {
 export const addQuestion = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
     try {
         const { question, courseId, contentId } = req.body as IAddQuestionData;
+        const course = await CourseModel.findById(courseId);
 
+        if( !mongoose.Types.ObjectId.isValid(courseId)){
+            return next( new ErrorHandler("Contenido inválido", 400));
+        }
         
 
     } catch (error:any) {
