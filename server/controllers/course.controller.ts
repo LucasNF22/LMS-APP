@@ -167,8 +167,31 @@ export const addQuestion = CatchAsyncError( async( req: Request, res: Response, 
 
         if( !mongoose.Types.ObjectId.isValid(courseId)){
             return next( new ErrorHandler("Contenido inválido", 400));
-        }
-        
+        };
+
+        const courseContent = course?.courseData?.find( (item:any) => item._id.equeals(contentId) );
+
+        if( !courseContent ){
+            return ( new ErrorHandler("contenido inválido", 400))
+        };
+
+        // Crear el objeto de la pregunta 
+        const newQuestion: any = {
+            user:req.user,
+            question,
+            questionReplies: [],
+        };
+
+        // Agregar pregunta al courseContent
+        courseContent.questions.push( newQuestion );
+
+        // Guardar course actualizado
+        await course?.save();
+
+        res.status(200).json({
+            success: true,
+            course,
+        });
 
     } catch (error:any) {
         return next( new ErrorHandler(error.message, 500));
