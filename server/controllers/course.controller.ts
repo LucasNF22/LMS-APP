@@ -211,9 +211,10 @@ interface IAddAnswerData {
 export const addAnswer = CatchAsyncError( async( res: Response, req: Request, next: NextFunction) => {
     try {
         const { answer, courseId, contentId, questionId } = req.body as IAddAnswerData;
+
         const course = await CourseModel.findById(courseId);
 
-        if( !mongoose.Types.ObjectId.isValid(courseId)){
+        if( !mongoose.Types.ObjectId.isValid(contentId)){
             return next( new ErrorHandler("Contenido inválido", 400));
         };
 
@@ -236,7 +237,7 @@ export const addAnswer = CatchAsyncError( async( res: Response, req: Request, ne
         };
 
         // Agregar respuesta al courseContent
-        question.questionReplies.push(newAnswer);
+        question.questionReplies?.push(newAnswer);
 
         await course?.save();
 
