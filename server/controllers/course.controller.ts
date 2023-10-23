@@ -160,6 +160,7 @@ interface IAddQuestionData {
     contentId: String;
 };
 
+// Hacer pregunta en curso
 export const addQuestion = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
     try {
         const { question, courseId, contentId } = req.body as IAddQuestionData;
@@ -169,7 +170,7 @@ export const addQuestion = CatchAsyncError( async( req: Request, res: Response, 
             return next( new ErrorHandler("Contenido inválido", 400));
         };
 
-        const courseContent = course?.courseData?.find( (item:any) => item._id.equeals(contentId) );
+        const courseContent = course?.courseData?.find( (item:any) => item._id.equals(contentId) );
 
         if( !courseContent ){
             return ( new ErrorHandler("contenido inválido", 400))
@@ -177,7 +178,7 @@ export const addQuestion = CatchAsyncError( async( req: Request, res: Response, 
 
         // Crear el objeto de la pregunta 
         const newQuestion: any = {
-            user:req.user,
+            user: req.user,
             question,
             questionReplies: [],
         };
@@ -195,5 +196,52 @@ export const addQuestion = CatchAsyncError( async( req: Request, res: Response, 
 
     } catch (error:any) {
         return next( new ErrorHandler(error.message, 500));
-    }
-})
+    };
+});
+
+
+// Agregar respuesta a pregunta en curso
+interface IAddAnswerData {
+    answer: string,
+    courseId: string,
+    contentId: string,
+    questionId: string,
+};
+
+export const addAnswer = CatchAsyncError( async( res: Response, req: Request, next: NextFunction) => {
+    try {
+        const { answer, courseId, contentId, questionId } = req.body as IAddAnswerData;
+        const course = await CourseModel.findById(courseId);
+
+        if( !mongoose.Types.ObjectId.isValid(courseId)){
+            return next( new ErrorHandler("Contenido inválido", 400));
+        };
+
+        const courseContent = course?.courseData?.find( (item:any) => item._id.equals(contentId) );
+
+        if( !courseContent ){
+            return ( new ErrorHandler("contenido inválido", 400))
+        };
+
+        const question = courseContent?.questions?.find((item: any) => item._id.equals( questionId ));
+
+        if( !question ){
+            return next( new ErrorHandler( "ID de pregunta inválida", 400 ))
+        };
+        
+        // Crear Objeto de la respuesta
+        const newAnswer: any = {
+            user: req.user,
+            answer,
+        };
+
+        // Agregar respuesta al courseContent
+        question.questionReplies.push(newAnswer);
+
+        await course?.save();
+
+
+    } catch (error:any) {
+        return next( new ErrorHandler(error.message, 500));
+    };
+});
