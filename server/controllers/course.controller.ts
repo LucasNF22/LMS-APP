@@ -6,6 +6,7 @@ import { createCourse } from '../services/course.service';
 import CourseModel from '../models/course.model';
 import { redis } from '../utils/redis';
 import mongoose from 'mongoose';
+import path from 'path';
 
 // Subir Curso
 export const uploadCourse = CatchAsyncError( async (req: Request, res: Response, next: NextFunction) => {
@@ -240,6 +241,17 @@ export const addAnswer = CatchAsyncError( async( res: Response, req: Request, ne
         question.questionReplies?.push(newAnswer);
 
         await course?.save();
+
+        if( req.user?._id === question.user._id ){
+            // crear notificacion
+        }else {
+            const data = {
+                name: question.user._id,
+                title: courseContent.title
+            };
+
+            const html = await ejs.renderFile( path.join(__dirname, "../mails/questions-reply.ejs") )
+        }
 
 
     } catch (error:any) {
