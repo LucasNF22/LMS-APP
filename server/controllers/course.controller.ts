@@ -7,6 +7,8 @@ import CourseModel from '../models/course.model';
 import { redis } from '../utils/redis';
 import mongoose from 'mongoose';
 import path from 'path';
+import ejs from 'ejs';
+import sendMail from '../utils/sendMail';
 
 // Subir Curso
 export const uploadCourse = CatchAsyncError( async (req: Request, res: Response, next: NextFunction) => {
@@ -209,9 +211,9 @@ interface IAddAnswerData {
     questionId: string,
 };
 
-export const addAnswer = CatchAsyncError( async( res: Response, req: Request, next: NextFunction) => {
+export const addAnswer = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
     try {
-        const { answer, courseId, contentId, questionId } = req.body as IAddAnswerData;
+        const { answer, courseId, contentId, questionId }: IAddAnswerData = req.body;
 
         const course = await CourseModel.findById(courseId);
 
@@ -246,12 +248,30 @@ export const addAnswer = CatchAsyncError( async( res: Response, req: Request, ne
             // crear notificacion
         }else {
             const data = {
-                name: question.user._id,
+                name: question.user.name,
                 title: courseContent.title
             };
 
-            const html = await ejs.renderFile( path.join(__dirname, "../mails/questions-reply.ejs") )
-        }
+            const html = await ejs.renderFile( path.join(__dirname, "../mails/questions-reply.ejs"), data )
+
+            try {
+                await sendMail({
+                    email: question.user.email,
+                    subject: "Respuesta a pregunta",
+                    template: "question-Reply.ejs",
+                    data,
+                })
+            } catch (error:any) {
+                return next( new ErrorHandler(error.message, 500))
+            }
+
+
+        };
+
+        res.status(200).json({
+            success: true,
+            course,
+        });
 
 
     } catch (error:any) {
