@@ -278,3 +278,22 @@ export const addAnswer = CatchAsyncError( async( req: Request, res: Response, ne
         return next( new ErrorHandler(error.message, 500));
     };
 });
+
+// Agregar reseña en curso
+interface IAddReview {
+    review: string,
+    caourseId: string,
+    rating: number,
+    userId: string,
+};
+
+export const addReview = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userCourseList = req.user?.courses;
+        
+
+
+    } catch (error: any) {
+        return next( new ErrorHandler( error.message, 500))
+    }
+})
