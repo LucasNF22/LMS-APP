@@ -280,9 +280,8 @@ export const addAnswer = CatchAsyncError( async( req: Request, res: Response, ne
 });
 
 // Agregar reseña en curso
-interface IAddReview {
+interface IAddReviewData {
     review: string,
-    caourseId: string,
     rating: number,
     userId: string,
 };
@@ -290,7 +289,26 @@ interface IAddReview {
 export const addReview = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
     try {
         const userCourseList = req.user?.courses;
-        
+
+        const courseId = req.params.id;
+
+        // Checkear si el coursId existe dentro de userCoursesList segund _id
+        const courseExist = userCourseList?.some(( course: any ) => course._id.toString() === courseId.toString());
+
+        if( !courseExist ){
+            return next( new ErrorHandler( "No puedes agregar una resela a este curso", 404));
+        };
+
+        const course = await CourseModel.findById( courseId );
+
+        const { review, rating } = req.body as IAddReviewData;
+
+        const reviewData = {
+            user: req.user,
+            comment: review,
+            rating,
+        };
+               
 
 
     } catch (error: any) {
