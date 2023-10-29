@@ -303,12 +303,13 @@ export const addReview = CatchAsyncError( async( req: Request, res: Response, ne
 
         const { review, rating } = req.body as IAddReviewData;
 
-        const reviewData = {
+        const reviewData: any = {
             user: req.user,
             comment: review,
-            rating,
+            rating
         };
-               
+        
+        course?.reviews.push( reviewData );
 
 
     } catch (error: any) {
