@@ -311,6 +311,32 @@ export const addReview = CatchAsyncError( async( req: Request, res: Response, ne
         
         course?.reviews.push( reviewData );
 
+        let avg = 0;
+
+        course?.reviews.forEach( (rev: any)  => {
+            avg += rev.rating;
+        });
+
+        if( course ){
+            course.ratings = avg / course?.reviews.length;
+        };
+
+        await course?.save();
+
+        const notification = {
+            title: "Nueva reseña recibida.",
+            message: `${ req.user?.name } ha echo una reseña en ${ course?.name }`
+        };
+
+        // Crear notificación
+
+
+
+        res.status(200).json({
+            success: true,
+            course,
+        });
+
 
     } catch (error: any) {
         return next( new ErrorHandler( error.message, 500))
