@@ -344,7 +344,7 @@ export const addReview = CatchAsyncError( async( req: Request, res: Response, ne
 });
 
 // Agregar respuesta en review
-interface IAddReviewData {
+interface IAddReviewReplyData {
     comment: string,
     courseId: string,
     reviewId: string,
@@ -353,15 +353,40 @@ interface IAddReviewData {
 
 export const addReplyToReview = CatchAsyncError( async(req: Request, res: Response, next: NextFunction) => {
     try {
-        const { comment, courseId, reviewId } = req.body as IAddReviewData
+        const { comment, courseId, reviewId } = req.body as IAddReviewReplyData;
 
         const course = await CourseModel.findById( courseId );
 
         if( !course ){
-            return next( new ErrorHandler( "Curso no encontrado", 404 ))
+            return next( new ErrorHandler( "Curso no encontrado", 404 ));
         };
 
         const review = course?.reviews?.find(( rev: any ) => rev._id.toString() === reviewId );
+
+        if( !review ){
+            return next( new ErrorHandler( "Reseña no encontrada", 404 ));
+        };
+
+        const replyData: any = {
+            user: req.user,
+            comment
+        };
+
+        if( !review.commentReplies ){
+            review.commentReplies = [];
+        };
+
+        review.commentReplies?.push( replyData );
+        
+        await course?.save();
+
+        res.status(200).json({
+            success: true,
+            course
+        });
+
+
+
 
     } catch (error: any) {
         return next( new ErrorHandler( error.message, 500 ))

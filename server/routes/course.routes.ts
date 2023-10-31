@@ -1,5 +1,5 @@
 const express = require('express');
-import { addAnswer, addQuestion, addReview, editCourse, getAllCourses, getCourseByUser, getSingleCourse, uploadCourse } from '../controllers/course.controller';
+import { addAnswer, addQuestion, addReplyToReview, addReview, editCourse, getAllCourses, getCourseByUser, getSingleCourse, uploadCourse } from '../controllers/course.controller';
 import { authorizedRoles, isAuthenticated } from '../middlewares/auth';
 const courseRouter = express.Router();
 
@@ -26,5 +26,8 @@ courseRouter.put( "/add-answer", isAuthenticated, addAnswer );
 
 // Agregar reseña
 courseRouter.put( "/add-review/:id", isAuthenticated, addReview );
+
+// Agregar respuesta en reseña
+courseRouter.put( "/add-reply", [isAuthenticated, authorizedRoles("admin")], addReplyToReview );
 
 export default courseRouter;
