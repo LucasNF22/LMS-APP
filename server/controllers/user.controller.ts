@@ -1,6 +1,6 @@
 require("dotenv").config();
 import { Request, Response, NextFunction } from "express";
-import userModel, { IUser } from "../models/user.model";
+import UserModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
@@ -25,7 +25,7 @@ export const registrationUser = CatchAsyncError(
         try {
             const { name, email, password } = req.body;
 
-            const isEmailExist = await userModel.findOne({ email });
+            const isEmailExist = await UserModel.findOne({ email });
             if (isEmailExist) {
                 return next(new ErrorHandler("El email ya existe", 400));
             }
@@ -113,13 +113,13 @@ export const activateUser = CatchAsyncError(
 
             const { name, email, password } = newUser.user;
 
-            const existUser = await userModel.findOne({ email });
+            const existUser = await UserModel.findOne({ email });
 
             if (existUser) {
                 return next(new ErrorHandler("El email ya esta en uso.", 400));
             }
 
-            const user = await userModel.create({
+            const user = await UserModel.create({
                 name,
                 email,
                 password,
@@ -149,13 +149,13 @@ export const loginUser = CatchAsyncError( async (req: Request, res: Response, ne
                 return next( new ErrorHandler( "Por favor ingrese su mail y contraseña", 400 ));
             };
 
-            const user = await userModel.findOne({ email }).select("+password");
+            const user = await UserModel.findOne({ email }).select("+password");
 
             if (!user) {
                 return next( new ErrorHandler( "Email o constraseña incorrectos", 400 ));
             }
 
-            const isPasswordMatch = await user?.comparePassword(password);
+            const isPasswordMatch = await user?.comparePassword( password );
 
             if (!isPasswordMatch) {
                 return next(new ErrorHandler("Invalid email or password", 400));
@@ -270,10 +270,10 @@ interface ISocialAuthBody {
 export const socialAuth = CatchAsyncError(async( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { email, name, avatar } = req.body as ISocialAuthBody;
-        const user = await userModel.findOne({ email });
+        const user = await UserModel.findOne({ email });
 
         if( !user ){
-            const newUser = await userModel.create({ email, name, avatar });
+            const newUser = await UserModel.create({ email, name, avatar });
             sendToken( newUser, 201, res );
         }else {
             sendToken( user, 200, res );
@@ -295,10 +295,10 @@ export const updateUserInfo = CatchAsyncError( async( req: Request, res: Respons
     try {
         const { name, email } = req.body as IUpdateUserInfo;
         const userId = req.user?._id;
-        const user = await userModel.findById(userId);
+        const user = await UserModel.findById(userId);
 
         if ( email && user ){
-            const isEmailExist = await userModel.findOne({ email });
+            const isEmailExist = await UserModel.findOne({ email });
 
             if( isEmailExist ){
                 return next( new ErrorHandler("El email ya existe", 400));
@@ -341,7 +341,7 @@ export const updateUserPassword = CatchAsyncError( async( req: Request, res: Res
             return next( new ErrorHandler( "Por favor ingrese sus contraseñas", 400 ));
         }
 
-        const user = await userModel.findById(req.user?._id).select("+password");;
+        const user = await UserModel.findById(req.user?._id).select("+password");;
 
         if( user?.password === undefined ){
             return next( new ErrorHandler( "Usuario inválido", 400 ));
@@ -382,7 +382,7 @@ export const updateProfilePicture = CatchAsyncError( async( req: Request, res: R
         const { avatar } = req.body as IUpdateProfilePicture;
         const userId = req.user?._id;
 
-        const user = await userModel.findById( userId );
+        const user = await UserModel.findById( userId );
 
         if( avatar && user ) {
 

@@ -27,7 +27,7 @@ export const uploadCourse = CatchAsyncError( async (req: Request, res: Response,
             };
 
         };
-       createCourse(data, res, next);
+       createCourse(data, res, next); // Averiguar porque tira advertencia
 
     } catch (error: any) {
         return next( new ErrorHandler( error.message, 500 ))
