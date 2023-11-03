@@ -61,15 +61,175 @@
         }
 
         .course-info > h4 {
-            
+            color: #23bd70;
+            font-size: 22px;
+            font-family: "Poppins", sans-serif;
+            font-weight: 500;
+            text-align: center;
+            padding: 0; /*!mportante*/
+            margin-top: 0 /*!important*/;
         }
+
+        .course-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .purchase-info {
+            font-size: 16pc;
+        }
+
+        .total {
+            font-size: 18px;
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 100px;
+            color: #ffffff;
+        }
+        
+        .footer > p > a {
+            text-decoration: none;
+            display: inline-block;
+            color: #ffffff;
+        }
+
+        .flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom:  1px solid #9999993f;
+        }
+
+        .flex h4 {
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .flex.lg {
+            width: 85%;
+            margin: auto;
+            border-bottom: none;
+        }
+
+        .first-td {
+            text-transform: uppercase;
+            color: #0000006c;
+            font-size: 16px;
+            padding: 5px 9px;
+            width: 1%;
+            font-weight: 600; /* !important */
+        }
+
+        .second-td {
+            font-weight: 500; /*!important */
+            color: #000000af;
+            font-size: 15px;
+        }
+
+        .title {
+            font-size: 16px; /* !important */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        td {
+            padding: 10px;
+            text-align: center;
+            width: 28.33%;
+        }
+
+        td.col-2 {
+            width: 100%;
+            text-align: left;
+            padding: 0px;
+            margin: 0;
+        }
+
+        .m-auto {
+            width: 100%;
+            margin: auto;
+        }
+
+        .table-row {
+            width: 70%;
+            display: block;
+            margin: auto;
+            padding: 10px 0px;
+        }
+
 
     </style>
 
 </head>
 
 <body>
+    <div class="container">
+        <div class="message-sm">
+            <h1>Su orden ha sido confirmada!</h1>
+            <p>Y estamos tan contentos como tú</p>
+        </div>
+        <br>
+        <br>
+        <div class="course-info">
+            <h4>Aquí está lo que ordenaste</h4>
+            <table style="border-bottom: 1px solid #0000002f">
+                <tr>
+                    <td>
+                        Order #: <=$ order._id %>
+                    </td>
+                    <td>
+                        Order Date: <=% order.date %>
+                    </td>
+                </tr>
+            </table>
+            
+            <table style="width: 90%; margin: auto; display: block">
+                <tr>
+                    <td class="first-td">Item</td>
+                    <td class="first-td">Qty</td>
+                    <td class="first-td">cost</td>
+                </tr>
+            </table>
+            
+            <table style="width: 90%; margin: auto; display: block">
+                <tr>
+                    <td class="first-td"> <=% order.name => </td>
+                    <td class="first-td">1</td>
+                    <td class="first-td"> <=% order.price => </td>
+                </tr>
+            </table>
+            
+            <table class="table-row" style="border-top: 1px solid #00000029;">
+                <tr>
+                    <td class="first-td">Subtotal:</td>
+                    <td class="first-td"> <=% order.price => </td>
+                </tr>
+            </table>
 
+            <table class="table-row" style="margin-top: -20px;">
+                <tr>
+                    <td class="first-td">Total:</td>
+                    <td class="first-td"> <=% order.price => </td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="footer">
+            <p>
+                Si tienes alguna consulta, contactate con nuestro equipo de soporte a
+                <a href="mailto:lms.app.service@gmail.com">lms.app.service@gmail.com</a>
+            </p>
+            <p>&copy; 2023 LMS. Todos los derechos reservados.</p>
+
+        </div>
+    </div>
 </body>
 
 </html>
