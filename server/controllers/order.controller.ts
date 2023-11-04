@@ -33,10 +33,9 @@ export const createOrder = CatchAsyncError( async( req: Request, res: Response, 
 
         const data: any = {
             courseId: course._id,
-            userId: user?._id
+            userId: user?._id,
+            payment_info,
         };
-
-        newOrder( data, res, next  ); // Averiguar porque tira advertencia
 
         const mailData = {
             order: {
@@ -50,10 +49,29 @@ export const createOrder = CatchAsyncError( async( req: Request, res: Response, 
         const html = await ejs.renderFile( path.join( __dirname, "../mails/order-confirmation.ejs"), { order: mailData } );
         
         try {
-            
+            if( user ){
+                await sendMail({
+                    email: user.email,
+                    subject: "confirmación de orden",
+                    template: "order-confirmation.ejs",
+                    data: mailData
+                });
+            }
         } catch (error: any) {
             return next( new ErrorHandler(error.message, 400));
         };
+
+        user?.courses.push(course?._id);
+
+        await user?.save();
+
+        await NotificationModel.create({
+            user: user?._id,
+            title: "Nueva orden",
+            message: `Tienes una nueva orden en: ${course?.name}`,
+        });
+
+        newOrder( data, res, next  ); // Averiguar porque tira advertencia
 
     } catch ( error:any ) {
         return next( new ErrorHandler( error.message, 500 ));

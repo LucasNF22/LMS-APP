@@ -5,6 +5,10 @@ import OrderModel from '../models/orderModel';
 // Crear nueva orden
 export const newOrder = CatchAsyncError( async( res: Response, data: any, next: NextFunction ) => {
     const order = await OrderModel.create( data );
-    next( order );
+
+    res.status(201).json({
+        success: true,
+        order,
+    });
 })
 ;
