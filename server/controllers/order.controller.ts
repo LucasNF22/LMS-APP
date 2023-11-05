@@ -39,7 +39,7 @@ export const createOrder = CatchAsyncError( async( req: Request, res: Response, 
 
         const mailData = {
             order: {
-                _id: course._id.slice(0.6),
+                _id: course._id.toString().slice(0,6),
                 name: course.name,
                 price: course.price,
                 date: new Date().toLocaleDateString("es-ES", { year: "numeric", month: "long", day: "numeric" }),
