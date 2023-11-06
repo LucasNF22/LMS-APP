@@ -9,6 +9,7 @@ import ejs from 'ejs';
 import sendMail from '../utils/sendMail';
 import NotificationModel from '../models/notificationModel';
 import { newOrder } from '../services/order.service';
+import { Console, log } from 'console';
 
 
 
@@ -32,7 +33,7 @@ export const createOrder = CatchAsyncError( async( req: Request, res: Response, 
         };
 
         const data: any = {
-            courseId: course._id,
+            courseId: courseId,
             userId: user?._id,
             payment_info,
         };
@@ -58,6 +59,8 @@ export const createOrder = CatchAsyncError( async( req: Request, res: Response, 
                 });
             }
         } catch (error: any) {
+            console.log(error);
+            
             return next( new ErrorHandler(error.message, 400));
         };
 
@@ -70,10 +73,24 @@ export const createOrder = CatchAsyncError( async( req: Request, res: Response, 
             title: "Nueva orden",
             message: `Tienes una nueva orden en: ${course?.name}`,
         });
+        
+        console.log(course);
+        console.log(course.purchased);
+        
+        if(course.purchased){
+            course.purchased + 1 ;
+            console.log(course.purchased);
+        }
+        await course.save();
+
+        
+
 
         newOrder( data, res, next  ); // Averiguar porque tira advertencia
 
     } catch ( error:any ) {
+        console.log(error);
+        
         return next( new ErrorHandler( error.message, 500 ));
     };
 });

@@ -182,10 +182,10 @@
             <table style="border-bottom: 1px solid #0000002f">
                 <tr>
                     <td>
-                        Order #: <=$ order._id %>
+                        Order #: <%= order._id %>
                     </td>
                     <td>
-                        Order Date: <=% order.date %>
+                        Order Date: <%= order.date %>
                     </td>
                 </tr>
             </table>
@@ -193,30 +193,30 @@
             <table style="width: 90%; margin: auto; display: block">
                 <tr>
                     <td class="first-td">Item</td>
-                    <td class="first-td">Qty</td>
-                    <td class="first-td">cost</td>
+                    <td class="first-td">Cant.</td>
+                    <td class="first-td">costo</td>
                 </tr>
             </table>
             
             <table style="width: 90%; margin: auto; display: block">
                 <tr>
-                    <td class="first-td"> <=% order.name => </td>
+                    <td class="first-td"> <%= order.name %> </td>
                     <td class="first-td">1</td>
-                    <td class="first-td"> <=% order.price => </td>
+                    <td class="first-td"> $<%= order.price %> </td>
                 </tr>
             </table>
             
             <table class="table-row" style="border-top: 1px solid #00000029;">
                 <tr>
                     <td class="first-td">Subtotal:</td>
-                    <td class="first-td"> <=% order.price => </td>
+                    <td class="first-td"> $<%= order.price %> </td>
                 </tr>
             </table>
 
             <table class="table-row" style="margin-top: -20px;">
                 <tr>
                     <td class="first-td">Total:</td>
-                    <td class="first-td"> <=% order.price => </td>
+                    <td class="first-td"> $<%= order.price %> </td>
                 </tr>
             </table>
 

@@ -19,14 +19,14 @@ const notificationSchema = new Schema<INotification>({
     status: {
         type: String,
         required: true,
-    },
-    userId: {
-        type: String,
-        required: true,
         default: "No leído"
     },
+    // userId: {
+    //     type: String,
+    //     required: true,
+    // },
 }, { timestamps: true });
 
-const NotificationModel: Model<INotification> = mongoose.model( 'Notificacion', notificationSchema );
+const NotificationModel: Model<INotification> = mongoose.model( 'Notification', notificationSchema );
 
 export default NotificationModel;
