@@ -74,19 +74,13 @@ export const createOrder = CatchAsyncError( async( req: Request, res: Response, 
             message: `Tienes una nueva orden en: ${course?.name}`,
         });
         
-            
-
         
         if(course){
             let newPurchased = course.purchased + 1 ;
             // console.log("suma??  " + newPurchased);
             course.purchased = newPurchased
             await course.save();
-        }
-
-
-        
-
+        };
 
         newOrder( data, res, next  ); // Averiguar porque tira advertencia
 
@@ -96,3 +90,5 @@ export const createOrder = CatchAsyncError( async( req: Request, res: Response, 
         return next( new ErrorHandler( error.message, 500 ));
     };
 });
+
+

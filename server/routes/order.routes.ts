@@ -4,7 +4,8 @@ import { createOrder } from '../controllers/order.controller';
 
 const orderRouter = express.Router();
 
-orderRouter.post( "/create-order", [ isAuthenticated ], createOrder );
+// crear orden
+orderRouter.post( "/create-order", isAuthenticated , createOrder );
 
 
 
