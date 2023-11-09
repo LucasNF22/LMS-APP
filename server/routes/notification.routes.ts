@@ -10,4 +10,5 @@ notificationRouter.get( "/get-notifications", [isAuthenticated, authorizedRoles(
 notificationRouter.put( "/update-notification/:id", [isAuthenticated, authorizedRoles("admin")], updateNotification );
 
 
+
 export default notificationRouter;

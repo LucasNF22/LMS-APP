@@ -1,11 +1,14 @@
 import express = require('express');
-import { isAuthenticated } from '../middlewares/auth';
-import { createOrder } from '../controllers/order.controller';
+import { authorizedRoles, isAuthenticated } from '../middlewares/auth';
+import { createOrder, getAllOrders } from '../controllers/order.controller';
 
 const orderRouter = express.Router();
 
-// crear orden
+// Crear orden
 orderRouter.post( "/create-order", isAuthenticated , createOrder );
+
+// Obtener todas las ordenes
+orderRouter.get( "/get-orders", [ isAuthenticated, authorizedRoles("admin") ], getAllOrders );
 
 
 
