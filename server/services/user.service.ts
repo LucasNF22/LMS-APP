@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { redis } from "../utils/redis";
 import UserModel from "../models/user.model";
+import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 
 
 // Obetener usuario por ID
@@ -23,5 +24,15 @@ export const getAllUsersService = async ( res: Response ) => {
     res.status(201).json({
         success: true,
         users,
+    });
+};
+
+// actualizar rol de usuario
+export const updateUserRoleService = async( res: Response, id: string, role: string) => {
+    const user = await UserModel.findByIdAndUpdate( id, { role }, { new: true });
+
+    res.status(201).json({
+        succes: true,
+        user,
     });
 };

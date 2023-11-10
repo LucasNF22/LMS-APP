@@ -1,7 +1,7 @@
 const express = require('express');
 // import express from "express"
 
-import { activateUser, getAllUsers, getUserInfo, loginUser, logoutUser, registrationUser, socialAuth, updateAccessToken, updateProfilePicture, updateUserInfo, updateUserPassword } from "../controllers/user.controller";
+import { activateUser, deleteUser, getAllUsers, getUserInfo, loginUser, logoutUser, registrationUser, socialAuth, updateAccessToken, updateProfilePicture, updateUserInfo, updateUserPassword, updateUserRole } from "../controllers/user.controller";
 import { authorizedRoles, isAuthenticated } from "../middlewares/auth";
 
 const userRouter = express.Router();
@@ -36,8 +36,14 @@ userRouter.put("/update-user-password", isAuthenticated, updateUserPassword);
 // Update avatar de usuario
 userRouter.put("/update-user-avatar", isAuthenticated, updateProfilePicture);
 
-// Obtener todos los usuarios
+// Obtener todos los usuarios -- Solo Admin
 userRouter.get("/get-users", [ isAuthenticated, authorizedRoles('admin') ], getAllUsers);
+
+// Actualizar rol de usuario -- Solo Admin
+userRouter.put("/update-user", [ isAuthenticated, authorizedRoles('admin') ], updateUserRole);
+
+// Eliminar usuarios -- Solo Admin
+userRouter.delete("/delete-user/:id", [ isAuthenticated, authorizedRoles('admin') ], deleteUser);
 
 
  

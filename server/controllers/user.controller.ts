@@ -9,7 +9,7 @@ import path from "path";
 import sendMail from "../utils/sendMail";
 import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getAllUsersService, getUserById } from "../services/user.service";
+import { getAllUsersService, getUserById, updateUserRoleService } from "../services/user.service";
 import cloudinary from 'cloudinary';
 
 // Registro de usuario
@@ -41,6 +41,8 @@ export const registrationUser = CatchAsyncError(
             const activationCode = activationToken.activationCode;
 
             const data = { user: { name: user.name }, activationCode };
+            // console.log(activationCode);
+            
             const html = await ejs.renderFile(
                 path.join(__dirname, "../mails/activation-mail.ejs"),
                 data
@@ -435,5 +437,43 @@ export const getAllUsers = CatchAsyncError( async( req: Request, res: Response, 
         getAllUsersService(res);
     } catch (error: any) {
         return next( new ErrorHandler(error.message, 400));
+    };
+});
+
+
+// Actualizar rol de usuario -- Solo Admin
+export const updateUserRole = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role } = req.body;
+
+        updateUserRoleService( res, id, role)
+
+    } catch (error:any) {
+        return next( new ErrorHandler( error.message, 400));        
+    };
+});
+
+
+// Elmiinar usuario -- Solo Admin
+export const deleteUser = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params
+
+        const user = await UserModel.findById( id );
+        if( !user ) {
+            return next( new ErrorHandler( "Usuario no encontrado ", 404));
+        };
+
+        await user.deleteOne({ id });
+
+        await redis.del( id );
+
+        res.status(200).json({
+            success: true,
+            message: "Usuario eliminado correctamente"
+        })
+
+    } catch (error: any) {
+        return next( new ErrorHandler( error.message, 400 ));
     };
 });
