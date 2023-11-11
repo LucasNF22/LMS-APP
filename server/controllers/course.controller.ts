@@ -416,7 +416,7 @@ export const getAllCoursesAdmin = CatchAsyncError( async( req: Request, res: Res
     };
 });
 
-// Elmiinar curso -- Solo Admin
+// Eliminar curso -- Solo Admin
 export const deleteCourse = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params
