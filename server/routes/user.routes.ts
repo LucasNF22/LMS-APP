@@ -16,7 +16,7 @@ userRouter.post("/activation", activateUser);
 userRouter.get("/login", loginUser);
 
 // Logout de usuario
-userRouter.get("/logout", [ isAuthenticated, authorizedRoles('user') ], logoutUser);
+userRouter.get("/logout", [ isAuthenticated ], logoutUser);
 
 // Update AccessToken
 userRouter.get("/refresh", updateAccessToken);
