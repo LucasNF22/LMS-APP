@@ -9,6 +9,7 @@ import courseRouter from './routes/course.routes';
 import orderRouter from './routes/order.routes';
 import notificationRouter from './routes/notification.routes';
 import analyticsRouter from './routes/analytics.routes';
+import layoutRouter from './routes/layout.routes';
 
 // Body parser
 app.use(express.json({limit: "50mb"}));
@@ -24,7 +25,7 @@ app.use(cors({
 }));
 
 // rutas
-app.use("/api/v1", userRouter, orderRouter, courseRouter, notificationRouter, analyticsRouter);
+app.use("/api/v1", userRouter, orderRouter, courseRouter, notificationRouter, analyticsRouter, layoutRouter);
 
 
 
