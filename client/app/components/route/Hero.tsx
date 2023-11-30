@@ -17,7 +17,7 @@ const Hero: FC<Props> = ( props ) => {
                 />
             </div>
             <div className='1000px:w-[60%] flex flex-col items-center 1000px:mt-[0px] text-center 1000px:text-left mt-[150px]'>
-                <h2 className='dark:text-white text-[#000000c7] text-[30px] px-3 w-full 1000px:text-[70px] font-[600] font-Josefin py-2 1000px:leading-[75px] 1500px:w-[50%]'>
+                <h2 className='dark:text-white text-[#000000c7] text-[30px] px-3 w-full 1000px:text-[70px] font-[600] font-Josefin py-2 1000px:leading-[75px] 1500px:w-[68%]'>
                     Mejora tu exeriencia de aprendizaje online
                 </h2>
                 <br />
@@ -37,8 +37,38 @@ const Hero: FC<Props> = ( props ) => {
                         <BiSearch className="text-white" size={30} />
                     </div>
                 </div>
+                <br />
+                <br />
+                <div className='1500px:w-[55%] 1100px:w-[78%] w-[90%] flex items-center'>
+                    <Image 
+                        src={require("../../../public/assets/01.jpg")}
+                        alt='avatar'
+                        className='rounded-full w-10 aspect-square'
+                        
+                    />
+                    <Image 
+                        src={require("../../../public/assets/02.jpg")}
+                        alt='avatar'
+                        className='rounded-full w-10 ml-[-20px] aspect-square'
+                    />
+                    <Image 
+                        src={require("../../../public/assets/03.jpg")}
+                        alt='avatar'
+                        className='rounded-full w-10 ml-[-20px] aspect-square'
+                    />
+                    <p className='font-Josefin dark:text-[#edfff4] text-[#000000b4] 1000px:pl-3 text-[18px] font-[600]'>
+                        Mas de 5000 personas ya confian en nosotros. {" "}
+                        <Link 
+                            href="/courses"
+                            className='dark:text-[#46e256] text-[crimson]'
+                        >
+                            Ver cursos
+                        </Link>
+                    </p>
             </div>
-            </div>
+            <br />
+        </div>
+        </div>
         
     )
 }
