@@ -10,9 +10,11 @@ type Props = {
     open: boolean,
     setOpen: (open: boolean) => void,
     activeItem: number,
+    route: string,
+    setRoute: string
 };
 
-const Header:FC<Props> = ({ activeItem, setOpen }) => {
+const Header:FC<Props> = ({ activeItem, setOpen, route }) => {
 
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -108,6 +110,22 @@ const Header:FC<Props> = ({ activeItem, setOpen }) => {
         }
 
       </div>
+      {
+        route === "Login" && (
+          <>
+            {
+              open && (
+                <CustomModal />
+              )
+            }
+          </>
+        )
+      }
+      {
+        route === "Sign-up" && (
+          < ></>
+        )
+      }
     </div>
       
   )

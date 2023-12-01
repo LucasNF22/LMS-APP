@@ -11,7 +11,9 @@ const Page: FC<Props> = (props) => {
   
   const [open, setOpen] = useState(false);
   const [activeIten, setActiveIten] = useState(0);
-  
+  const [route, setRoute] = useState("Login");
+
+
   return ( 
     <div>
       <Heading 
@@ -23,6 +25,8 @@ const Page: FC<Props> = (props) => {
         open={open}
         setOpen={setOpen}
         activeItem={activeIten}
+        setRoute={setRoute}
+        route={route}
       />
       <Hero />
     </div>
