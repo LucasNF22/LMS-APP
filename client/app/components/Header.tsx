@@ -5,6 +5,7 @@ import React, { FC, useState } from 'react';
 import NavItems from "../utils/NavItems";
 import {ThemeSwitcher} from '../utils/ThemeSwitcher';
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from 'react-icons/hi';
+import CustomModal from '../utils/CustomModal';
 
 type Props = {
     open: boolean,
@@ -14,7 +15,7 @@ type Props = {
     setRoute: string
 };
 
-const Header:FC<Props> = ({ activeItem, setOpen, route }) => {
+const Header:FC<Props> = ({ activeItem, setOpen, route, open }) => {
 
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
