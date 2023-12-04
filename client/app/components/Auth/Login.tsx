@@ -5,6 +5,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { AiOutlineEye, AiOutlineEyeInvisible, AiFillGithub } from 'react-icons/ai';
 import { FcGoogle } from 'react-icons/fc';
+import { styles, label } from '../../../app/styles/style';
 
 type Props = {
     setRoute: (route: string) => void;
@@ -27,11 +28,20 @@ const Login:FC<Props> = (props: Props) => {
         },
     });
 
-  return (
-    <div>
+    const { errors, touched, values, handleChange, handleSubmit } = formik;
 
-    </div>
-  )
+    return (
+      <div className='w-full'>
+        <h1 className={`${styles.title}`}>
+            Login en LMS
+        </h1>
+        <form onSubmit={handleSubmit}>
+            <label htmlFor="email" className={`${styles.label}`}>
+                Ingrese su email
+            </label>
+        </form>
+      </div>
+    )
 }
 
 export default Login
