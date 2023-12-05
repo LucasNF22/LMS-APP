@@ -39,6 +39,52 @@ const Login:FC<Props> = (props: Props) => {
             <label htmlFor="email" className={`${styles.label}`}>
                 Ingrese su email
             </label>
+            <input 
+                type="email" 
+                name=""
+                value={ values.email }
+                onChange={ handleChange }
+                id="email"
+                placeholder='email@email.com'
+                className={`${
+                    errors.email && touched.email && "border-red-500"
+                } ${styles.input}`}
+            />
+            { errors.email && touched.email && (
+                    <span className='text-red-500 pt-2 block'>{errors.email}</span>
+                )
+            }
+            <div className='w-full mt-5 relative mb-1'>
+                <label htmlFor="email" className={`${styles.label}`}>
+                    Ingrese su contraseña
+                </label>
+                <input 
+                    type={ !show ? "password" : "show" } 
+                    name='password'
+                    value={ values.password }
+                    onChange={ handleChange }
+                    id='password'
+                    placeholder='contraseña!@%'
+                    className={`${
+                        errors.password && touched.password && "border-red-500"
+                    } ${styles.input}`}
+                />
+                {
+                    !show ? (
+                        <AiOutlineEyeInvisible 
+                            className='absolute bottom-3 right-2 z-1 cursor-pointer'
+                            size={20}
+                            onClick={() => setShow(true)}
+                        />
+                    ) : (
+                        <AiOutlineEye
+                            className='absolute bottom-3 right-2 z-1 cursor-pointer'
+                            size={20}
+                            onClick={() => setShow(false)}
+                        />
+                    )
+                }
+            </div>
         </form>
       </div>
     )
