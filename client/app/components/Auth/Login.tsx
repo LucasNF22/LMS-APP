@@ -16,7 +16,7 @@ const schema = Yup.object().shape({
     pasword: Yup.string().required("Por favor ingrese su contraseña").min(6),
 });
 
-const Login:FC<Props> = (props: Props) => {
+const Login:FC<Props> = ({ setRoute }) => {
 
     const [show, setShow] = useState(false);
 
@@ -84,6 +84,36 @@ const Login:FC<Props> = (props: Props) => {
                         />
                     )
                 }
+                {
+                    errors.password && touched.password &&(
+                        <span className='text-red-500 pt-2 block'>{errors.password}</span>
+                    )
+                }
+            </div>
+            <div className='w-full mt-5'>
+                <input 
+                    type="submit" 
+                    value="Login"
+                    className={`${styles.button}`}
+                />
+                <br />
+                <h5 className='text-center pt-4 font-Poppins text-[14px] text-black dark:text-white'>
+                    O ingresa con
+                </h5>
+                <div className='flex items-center justify-center mt-2'>
+                    <FcGoogle size={30} className="cursor-pointer mr-2"/>
+                    <AiFillGithub size={30} className="cursor-pointer ml-2"/>
+                </div>
+                <h5 className='text-center pt-4 font-Poppins text-[14px]'>
+                    No tiene ninguna Cuenta{" "}
+                    <span
+                        className='text-[#2190ff] pl-1 cursor-pointer'
+                        onClick={ () => setRoute("Sign-Up") }
+                    >
+                    Registrate    
+                    </span>
+                </h5>
+                <br />
             </div>
         </form>
       </div>
