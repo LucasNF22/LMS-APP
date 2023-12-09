@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { VscWorkspaceTrusted } from 'react-icons/vsc';
 
@@ -15,9 +15,17 @@ type verifyNumber = {
   "3": string,
 };
 
-const Verification = (props: Props) => {
+const Verification<> = (props: Props) => {
+  
+  const [ invalidError, setInvalidError] = useState<boolean>(false);
+  const inputRefs = {
+    useRef<HTMLInputElement>
+  }
+
   return (
-    <div>Verification</div>
+    <div>
+      Verification
+    </div>
   )
 }
 
