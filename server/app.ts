@@ -1,11 +1,15 @@
 require('dotenv').config();
-import express, { NextFunction, Request, Response } from 'express';
-export const app = express();
+import express, { NextFunction, Request, Response, Express } from 'express';
+export const app: Express = express();
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { ErrorMiddleware } from './middlewares/error';
-import userRouter from './routes/user.route';
-
+import userRouter from './routes/user.routes';
+import courseRouter from './routes/course.routes';
+import orderRouter from './routes/order.routes';
+import notificationRouter from './routes/notification.routes';
+import analyticsRouter from './routes/analytics.routes';
+import layoutRouter from './routes/layout.routes';
 
 // Body parser
 app.use(express.json({limit: "50mb"}));
@@ -21,13 +25,15 @@ app.use(cors({
 }));
 
 // rutas
-app.use("/api/v1", userRouter)
+app.use("/api/v1", userRouter, orderRouter, courseRouter, notificationRouter, analyticsRouter, layoutRouter);
+
+
 
 
 // Testing API
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json({
-        succes: true,
+        success: true,
         message: "Testing API en funcionamiento."
     })
 });

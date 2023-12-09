@@ -22,7 +22,7 @@ export const isAuthenticated = CatchAsyncError( async( req: Request, res: Respon
     const user = await redis.get(decoded.id);
 
     if( !user ) {
-        return next( new ErrorHandler("Usuario no econtrado", 400));
+        return next( new ErrorHandler("Por favor ingrese a la plataforma para visualizar este contenido", 400));
     }
 
     req.user = JSON.parse( user );

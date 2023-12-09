@@ -1,6 +1,6 @@
 require("dotenv").config();
-import { Request, Response, NextFunction, request } from "express";
-import userModel, { IUser } from "../models/user.model";
+import { Request, Response, NextFunction } from "express";
+import UserModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
 import { CatchAsyncError } from "../middlewares/catchAsyncErrors";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
@@ -9,7 +9,7 @@ import path from "path";
 import sendMail from "../utils/sendMail";
 import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getUserById } from "../services/user.service";
+import { getAllUsersService, getUserById, updateUserRoleService } from "../services/user.service";
 import cloudinary from 'cloudinary';
 
 // Registro de usuario
@@ -25,7 +25,7 @@ export const registrationUser = CatchAsyncError(
         try {
             const { name, email, password } = req.body;
 
-            const isEmailExist = await userModel.findOne({ email });
+            const isEmailExist = await UserModel.findOne({ email });
             if (isEmailExist) {
                 return next(new ErrorHandler("El email ya existe", 400));
             }
@@ -41,6 +41,8 @@ export const registrationUser = CatchAsyncError(
             const activationCode = activationToken.activationCode;
 
             const data = { user: { name: user.name }, activationCode };
+            // console.log(activationCode);
+            
             const html = await ejs.renderFile(
                 path.join(__dirname, "../mails/activation-mail.ejs"),
                 data
@@ -113,13 +115,13 @@ export const activateUser = CatchAsyncError(
 
             const { name, email, password } = newUser.user;
 
-            const existUser = await userModel.findOne({ email });
+            const existUser = await UserModel.findOne({ email });
 
             if (existUser) {
                 return next(new ErrorHandler("El email ya esta en uso.", 400));
             }
 
-            const user = await userModel.create({
+            const user = await UserModel.create({
                 name,
                 email,
                 password,
@@ -149,13 +151,13 @@ export const loginUser = CatchAsyncError( async (req: Request, res: Response, ne
                 return next( new ErrorHandler( "Por favor ingrese su mail y contraseña", 400 ));
             };
 
-            const user = await userModel.findOne({ email }).select("+password");
+            const user = await UserModel.findOne({ email }).select("+password");
 
             if (!user) {
                 return next( new ErrorHandler( "Email o constraseña incorrectos", 400 ));
             }
 
-            const isPasswordMatch = await user?.comparePassword(password);
+            const isPasswordMatch = await user?.comparePassword( password );
 
             if (!isPasswordMatch) {
                 return next(new ErrorHandler("Invalid email or password", 400));
@@ -210,7 +212,7 @@ export const updateAccessToken = CatchAsyncError( async( req: Request, res: Resp
 
         const session = await redis.get( decoded.id as string );
         if( !session ){
-            return next( new ErrorHandler( message, 400 ));
+            return next( new ErrorHandler( "Por favor ingrese a la plataforma para visualizar este contenido", 400 ));
         };
 
         const user = JSON.parse( session );
@@ -235,6 +237,8 @@ export const updateAccessToken = CatchAsyncError( async( req: Request, res: Resp
 
         res.cookie( "access_token", accessToken, accessTokenOptions );
         res.cookie( "refresh_token", refreshToken, refreshTokenOptions );
+
+        await redis.set( user._id, JSON.stringify(user), "EX", 604800 ); // 7 dias
 
         res.status(200).json({
             status: "success",
@@ -270,10 +274,10 @@ interface ISocialAuthBody {
 export const socialAuth = CatchAsyncError(async( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { email, name, avatar } = req.body as ISocialAuthBody;
-        const user = await userModel.findOne({ email });
+        const user = await UserModel.findOne({ email });
 
         if( !user ){
-            const newUser = await userModel.create({ email, name, avatar });
+            const newUser = await UserModel.create({ email, name, avatar });
             sendToken( newUser, 201, res );
         }else {
             sendToken( user, 200, res );
@@ -295,10 +299,10 @@ export const updateUserInfo = CatchAsyncError( async( req: Request, res: Respons
     try {
         const { name, email } = req.body as IUpdateUserInfo;
         const userId = req.user?._id;
-        const user = await userModel.findById(userId);
+        const user = await UserModel.findById(userId);
 
         if ( email && user ){
-            const isEmailExist = await userModel.findOne({ email });
+            const isEmailExist = await UserModel.findOne({ email });
 
             if( isEmailExist ){
                 return next( new ErrorHandler("El email ya existe", 400));
@@ -341,7 +345,7 @@ export const updateUserPassword = CatchAsyncError( async( req: Request, res: Res
             return next( new ErrorHandler( "Por favor ingrese sus contraseñas", 400 ));
         }
 
-        const user = await userModel.findById(req.user?._id).select("+password");;
+        const user = await UserModel.findById(req.user?._id).select("+password");;
 
         if( user?.password === undefined ){
             return next( new ErrorHandler( "Usuario inválido", 400 ));
@@ -382,7 +386,7 @@ export const updateProfilePicture = CatchAsyncError( async( req: Request, res: R
         const { avatar } = req.body as IUpdateProfilePicture;
         const userId = req.user?._id;
 
-        const user = await userModel.findById( userId );
+        const user = await UserModel.findById( userId );
 
         if( avatar && user ) {
 
@@ -427,4 +431,51 @@ export const updateProfilePicture = CatchAsyncError( async( req: Request, res: R
     } catch (error: any) {
         return next( new ErrorHandler(error.message, 400));
     }
-})
+});
+
+// Obtener todos los usuarios -- Solo Admin
+export const getAllUsers = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
+    try {
+        getAllUsersService(res);
+    } catch (error: any) {
+        return next( new ErrorHandler(error.message, 400));
+    };
+});
+
+
+// Actualizar rol de usuario -- Solo Admin
+export const updateUserRole = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id, role } = req.body;
+
+        updateUserRoleService( res, id, role)
+
+    } catch (error:any) {
+        return next( new ErrorHandler( error.message, 400));        
+    };
+});
+
+
+// Elmiinar usuario -- Solo Admin
+export const deleteUser = CatchAsyncError( async( req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params
+
+        const user = await UserModel.findById( id );
+        if( !user ) {
+            return next( new ErrorHandler( "Usuario no encontrado ", 404));
+        };
+
+        await user.deleteOne({ id });
+
+        await redis.del( id );
+
+        res.status(200).json({
+            success: true,
+            message: "Usuario eliminado correctamente"
+        })
+
+    } catch (error: any) {
+        return next( new ErrorHandler( error.message, 400 ));
+    };
+});
