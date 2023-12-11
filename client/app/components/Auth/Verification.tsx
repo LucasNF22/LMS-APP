@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, FC } from 'react';
 import toast from 'react-hot-toast';
 import { VscWorkspaceTrusted } from 'react-icons/vsc';
 
@@ -15,12 +15,26 @@ type verifyNumber = {
   "3": string,
 };
 
-const Verification<> = (props: Props) => {
+const Verification:FC<Props> = ({setRoute}) => {
   
   const [ invalidError, setInvalidError] = useState<boolean>(false);
-  const inputRefs = {
-    useRef<HTMLInputElement>
-  }
+  
+  const inputRefs = [
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+  ];
+
+  const verificationHandler = async() => {
+    console.log('Verification Test');
+    
+  };
+
+  const HandleInputChange = ( index:number, value:string ) => {
+    setInvalidError(false);
+    const newVerifyNumber = {...verifyNumber, [index]: value }
+  };
 
   return (
     <div>
